@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.tanstack/
+.browsers/
+.env*
+*.local
+architecture/
+research/
+artifacts/
+static-host/
+test-results/
+playwright-report/
+__pycache__/
+*.py[cod]
+.venv/
+docs/WORKER_REPAIR.md
+docs/PM_DATA_RECOVERY.md

@@ -1,0 +1,2 @@
+import { defineConfig } from '@playwright/test'
+export default defineConfig({testDir:'tests/browser',timeout:60000,workers:1,use:{baseURL:'http://127.0.0.1:4185',viewport:{width:1280,height:800},trace:'retain-on-failure'},webServer:{command:'node scripts/static-preview.mjs',url:'http://127.0.0.1:4185/carte-scolaire/',reuseExistingServer:false},reporter:[['list'],['json',{outputFile:'artifacts/browser-results.json'}]]})
