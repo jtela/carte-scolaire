@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-11T07:26:24.141548+00:00",
+  "generatedAt": "2026-10-11T22:30:22.520964+00:00",
   "datasets": [
     {
       "id": "hg-6eme-1",
@@ -96,6 +96,28 @@
       "crs": "EPSG:4326",
       "featureCount": 31,
       "coverageNote": "Couverture partielle : secteurs intersectant ou bordant la commune ; aucune garantie d’affectation individuelle. Les contours peuvent créer des intersections marginales."
+    },
+    {
+      "id": "versailles-2025-1",
+      "sourceId": "versailles-2025",
+      "title": "Secteurs des collèges publics — Versailles 2025–2026",
+      "publisher": "Conseil départemental des Yvelines",
+      "catalogUrl": "https://78-92.fr/annuaire/aides-et-services/detail/sectorisation-des-colleges",
+      "downloadUrl": "https://sig.yvelines.fr/arcgis/rest/services/INTERNET/web_sectorisation_coll%C3%A8ges/MapServer/63/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson",
+      "licenseName": "Réutilisation attribuée ; aucune licence explicite identifiée (pas une Licence Ouverte)",
+      "licenseUrl": "https://guides.data.gouv.fr/guides/guide-juridique/reutilisateurs-de-donnees/respecter-les-conditions-de-reutilisation",
+      "sourceModifiedAt": null,
+      "schoolYear": "2025-2026",
+      "retrievedAt": "2026-10-11",
+      "sha256": "4678fdad2144a1cf52fe3b405d455f52ff5e771925aa4a9e47d7aa6fd2535af6",
+      "assetSha256": "2804f057dba563ec1d8eb8027e8adf4f7c213871794c113b1849e36c7f560b0b",
+      "assetPath": "sectors/versailles-2025-1.2804f057dba5.geojson",
+      "crs": "EPSG:4326",
+      "featureCount": 9,
+      "coverageNote": "Couverture partielle : 9 zones identifiées par les codes commune du producteur NUM_INSEE=78646, 5 collèges publics. Année scolaire 2025–2026 uniquement, pas de millésime 2026–2027 vérifié. Carte indicative : seule la délibération du Département est opposable ; vérifier l’adresse et les dérogations avec le Département. Métadonnées de couche contradictoires et discordances entre zonage et voirie ; affectations individuelles non garanties. Consulter l’outil officiel pour une adresse.",
+      "crosswalkSha256": "1f4b3ac0c26e1a664e8ce958f57f2e1117edd2cedabba4fa48f66c5fbfba4804",
+      "crosswalkUrl": "https://sig.yvelines.fr/arcgis/rest/services/INTERNET/web_sectorisation_coll%C3%A8ges/MapServer/55/query?where=1%3D1&outFields=*&returnGeometry=false&f=json",
+      "officialMapUrl": "https://experience.arcgis.com/experience/289afd3aa2884a52a61efbf29b548e0d"
     }
   ],
   "communes": {
@@ -11237,6 +11259,31 @@
         2.469851,
         48.902148
       ]
+    },
+    "78646": {
+      "datasetIds": [
+        "versailles-2025-1"
+      ],
+      "featureIds": [
+        "versailles-2025-1:290",
+        "versailles-2025-1:291",
+        "versailles-2025-1:292",
+        "versailles-2025-1:269",
+        "versailles-2025-1:313",
+        "versailles-2025-1:314",
+        "versailles-2025-1:315",
+        "versailles-2025-1:316",
+        "versailles-2025-1:317"
+      ],
+      "coverage": "partial",
+      "associationMethod": "publisher-codes",
+      "limitation": "Couverture partielle : 9 zones identifiées par les codes commune du producteur NUM_INSEE=78646, 5 collèges publics. Année scolaire 2025–2026 uniquement, pas de millésime 2026–2027 vérifié. Carte indicative : seule la délibération du Département est opposable ; vérifier l’adresse et les dérogations avec le Département. Métadonnées de couche contradictoires et discordances entre zonage et voirie ; affectations individuelles non garanties. Consulter l’outil officiel pour une adresse.",
+      "bounds": [
+        2.069909,
+        48.779166,
+        2.168389,
+        48.828578
+      ]
     }
   },
   "contours": [
@@ -11252,6 +11299,13 @@
       "sha256": "802b9f1917d0aed9e9e4d81ef664fa2aa292fe70078600fe8a1d076892a083ca",
       "sourceUrl": "https://geo.api.gouv.fr/communes/75056?fields=nom,code,codesPostaux,codeDepartement&format=geojson&geometry=contour",
       "retrievedAt": "2026-10-11",
+      "licenseName": "Licence Ouverte v2.0"
+    },
+    {
+      "filename": "versailles/commune-78646.geojson",
+      "sha256": "e681e828e108cc78617a7e984a2b2bbbae65b9923beffcbdeaa36948dfdad6bd",
+      "sourceUrl": "https://geo.api.gouv.fr/communes/78646?fields=nom,code,codesPostaux,codeDepartement&format=geojson&geometry=contour",
+      "retrievedAt": "2026-10-12",
       "licenseName": "Licence Ouverte v2.0"
     }
   ]

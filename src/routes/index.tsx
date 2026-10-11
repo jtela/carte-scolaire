@@ -49,7 +49,7 @@ function SearchPage(){
   if(state.stage==='sectors' && state.commune){const {id,signal}=begin('loading-sectors');void load(state.commune,id,signal)}
   else void search()
  }
- const messages={idle:'Recherchez une commune pour afficher ses secteurs.',invalid:'Saisissez un code postal à 5 chiffres ou un nom de commune.',searching:'Recherche des communes…','no-match':'Aucune commune trouvée.','choose-commune':'Plusieurs communes correspondent. Choisissez une commune.','loading-sectors':'Chargement des secteurs…',unavailable:'Limites des secteurs non disponibles dans les sources vérifiées pour cette commune.',empty:'Aucun polygone trouvé dans les données consultées.',ready:state.sectors?.result.kind==='ready'?`${state.sectors.result.features.length} secteurs intersectant ou bordant la commune. Couverture partielle.`:'',error:state.stage==='sectors'?'Impossible de charger les secteurs.':'Recherche indisponible.'}
+ const messages={idle:'Recherchez une commune pour afficher ses secteurs.',invalid:'Saisissez un code postal à 5 chiffres ou un nom de commune.',searching:'Recherche des communes…','no-match':'Aucune commune trouvée.','choose-commune':'Plusieurs communes correspondent. Choisissez une commune.','loading-sectors':'Chargement des secteurs…',unavailable:'Limites des secteurs non disponibles dans les sources vérifiées pour cette commune.',empty:'Aucun polygone trouvé dans les données consultées.',ready:state.sectors?.result.kind==='ready'?`${state.sectors.result.features.length} secteurs ${state.sectors.entry?.associationMethod==='publisher-codes'?'identifiés par les codes commune du producteur':'intersectant ou bordant la commune'}. Couverture partielle.`:'',error:state.stage==='sectors'?'Impossible de charger les secteurs.':'Recherche indisponible.'}
  const sources=state.sectors?.datasets.filter((d,i,all)=>all.findIndex(other=>other.sourceId===d.sourceId)===i)||[]
  return <main data-state={state.kind}>
   <h1>Secteurs des collèges publics</h1>
@@ -63,7 +63,7 @@ function SearchPage(){
    {state.candidates!.length>=20 && <p>Affinez le nom de la commune : la liste est limitée à 20 résultats.</p>}
    <label htmlFor="commune">Commune trouvée</label><select id="commune" value={choice} onChange={event=>setChoice(event.target.value)}><option value="">Choisissez une commune</option>{state.candidates!.map(c=><option key={c.code} value={c.code}>{c.nom} ({c.codeDepartement}) — {c.codesPostaux.join(', ')}</option>)}</select><button onClick={choose} disabled={!choice}>Choisir</button>
   </div>}
-  <p className="coverage">Sources vérifiées : Haute-Garonne (entrée en 6ème, année non précisée) et Paris (2026–2027). Couverture partielle, pas de garantie d’affectation.</p>
+  <p className="coverage">Sources vérifiées : Haute-Garonne (entrée en 6ème, année non précisée), Paris (2026–2027) et Versailles (2025–2026, carte indicative). Couverture partielle, pas de garantie d’affectation.</p>
   {state.commune && <h2>{state.commune.nom} <small>({state.commune.code})</small></h2>}
   {state.sectors?.entry && <p className="limitation">{state.sectors.entry.limitation}</p>}
   {state.kind==='ready' && state.sectors?.result.kind==='ready' && <SectorMap key={state.generation} commune={state.commune!.nom} features={state.sectors.result.features} bounds={state.sectors.entry!.bounds}/>}

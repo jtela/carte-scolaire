@@ -16,6 +16,37 @@ class IngestionTests(unittest.TestCase):
   self.assertTrue(all(f['properties']['schoolYear']=='2026-2027' for f in p))
   self.assertTrue(all(f['properties']['schoolYear'] is None for f in h))
   self.assertTrue(any(len(f['properties']['colleges'])>1 for f in p))
+ def test_versailles_publisher_slice_preserves_all_nine_geometries_and_exact_crosswalk(self):
+  spec=importlib.util.spec_from_file_location('ingest',ROOT/'scripts/data/ingest.py')
+  module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  source=json.loads((ROOT/'research/versailles/sectors-2025-2026.geojson').read_text())
+  table=json.loads((ROOT/'research/versailles/colleges-table55.json').read_text())
+  expected=[f for f in source['features'] if str(f['properties']['NUM_INSEE'])=='78646']
+  self.assertEqual(len(expected),9)
+  result=module.normalize(source,'versailles-2025',table)
+  self.assertEqual([f['geometry'] for f in result],[f['geometry'] for f in expected])
+  self.assertEqual({f['properties']['colleges'][0]['uai'] for f in result},{'0781298M','0781106D','0780580G','0780718G','0781107E'})
+  for feature in result:
+   self.assertEqual(feature['properties']['catchmentCommuneCodes'],['78646'])
+   self.assertEqual(feature['properties']['schoolYear'],'2025-2026')
+   self.assertTrue(feature['properties']['colleges'][0]['name'].startswith('Collège '))
+   self.assertEqual(set(feature['properties']),{'id','datasetId','sourceFeatureId','colleges','catchmentCommuneCodes','schoolYear'})
+ def test_versailles_crosswalk_rejects_missing_duplicate_and_private_colleges(self):
+  import copy
+  spec=importlib.util.spec_from_file_location('ingest',ROOT/'scripts/data/ingest.py')
+  module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  source=json.loads((ROOT/'research/versailles/sectors-2025-2026.geojson').read_text())
+  table=json.loads((ROOT/'research/versailles/colleges-table55.json').read_text())
+  match=next(row for row in table['features'] if row['attributes']['COL_CODE']=='0781298M')
+  missing=copy.deepcopy(table); missing['features']=[row for row in missing['features'] if row['attributes']['COL_CODE']!='0781298M']
+  duplicate=copy.deepcopy(table); duplicate['features'].append(copy.deepcopy(match))
+  private=copy.deepcopy(table)
+  next(row for row in private['features'] if row['attributes']['COL_CODE']=='0781298M')['attributes']['COL_TYPE']='PR'
+  for invalid in [missing,duplicate,private]:
+   with self.assertRaisesRegex(ValueError,'crosswalk'): module.normalize(source,'versailles-2025',invalid)
+  relocated=copy.deepcopy(table)
+  for row in relocated['features']: row['attributes']['COL_COMMUN']='NOT VERSAILLES'
+  self.assertEqual(len(module.normalize(source,'versailles-2025',relocated)),9,'Do not filter zones by college address commune')
  def test_association_uses_polygon_intersection_not_location_or_bbox(self):
   spec=importlib.util.spec_from_file_location('ingest',ROOT/'scripts/data/ingest.py')
   module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
@@ -32,7 +63,15 @@ class IngestionTests(unittest.TestCase):
   self.assertTrue(hasattr(module,'build_assets'), 'asset builder missing')
   with tempfile.TemporaryDirectory(dir=ROOT/'artifacts') as tmp:
    manifest=module.build_assets(ROOT/'research',Path(tmp))
-   self.assertEqual(len(manifest['communes']),587)
+   self.assertEqual(len(manifest['communes']),588)
+   versailles=manifest['communes']['78646']
+   self.assertEqual(len(versailles['featureIds']),9)
+   self.assertEqual(versailles['associationMethod'],'publisher-codes')
+   dataset=next(d for d in manifest['datasets'] if d['sourceId']=='versailles-2025')
+   self.assertEqual(dataset['schoolYear'],'2025-2026')
+   self.assertIn('aucune licence explicite',dataset['licenseName'])
+   self.assertEqual(dataset['crosswalkSha256'],'1f4b3ac0c26e1a664e8ce958f57f2e1117edd2cedabba4fa48f66c5fbfba4804')
+   self.assertTrue(dataset['assetPath'].endswith(dataset['assetSha256'][:12]+'.geojson'),'New multi-input snapshot path must depend on final asset bytes')
    self.assertEqual(len(manifest['communes']['31555']['featureIds']),41)
    self.assertEqual(len(manifest['communes']['31066']['featureIds']),2)
    self.assertEqual(len(manifest['communes']['31118']['featureIds']),4)
@@ -42,6 +81,21 @@ class IngestionTests(unittest.TestCase):
     self.assertEqual(len(d['sha256']),64)
     self.assertLess((Path(tmp)/d['assetPath']).stat().st_size,5_000_000)
 class RefreshSafetyTests(unittest.TestCase):
+ def test_changed_versailles_inputs_preserve_manifest_and_every_asset(self):
+  import tempfile, shutil
+  spec=importlib.util.spec_from_file_location('ingest',ROOT/'scripts/data/ingest.py')
+  module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+  for filename,pattern in [('sectors-2025-2026.geojson','Source hash'),('colleges-table55.json','crosswalk hash'),('commune-78646.geojson','Contour snapshot')]:
+   with self.subTest(filename=filename), tempfile.TemporaryDirectory(dir=ROOT/'artifacts') as tmp:
+    inputs=Path(tmp)/'inputs'; inputs.mkdir(); output=Path(tmp)/'output'
+    for old in ['pm-haute-garonne-6eme.geojson','pm-paris-2026-2027.geojson','pm-communes-31.geojson','pm-commune-paris.geojson']: shutil.copy2(ROOT/'research'/old,inputs/old)
+    shutil.copytree(ROOT/'research/versailles',inputs/'versailles')
+    shutil.copytree(ROOT/'public/data',output)
+    before={str(p.relative_to(output)):p.read_bytes() for p in output.rglob('*') if p.is_file()}
+    (inputs/'versailles'/filename).write_text('{}')
+    with self.assertRaisesRegex(ValueError,pattern): module.build_assets(inputs,output)
+    after={str(p.relative_to(output)):p.read_bytes() for p in output.rglob('*') if p.is_file()}
+    self.assertEqual(before,after,'Even a late-source failure must preserve every output byte')
  def test_invalid_contours_preserve_manifest_and_all_assets(self):
   import tempfile, shutil, copy
   spec=importlib.util.spec_from_file_location('ingest',ROOT/'scripts/data/ingest.py')

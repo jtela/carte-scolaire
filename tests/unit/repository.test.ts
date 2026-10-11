@@ -31,7 +31,7 @@ it('distinguishes missing coverage and verified empty selection from HTTP or sch
 const manifest=JSON.parse(readFileSync('public/data/manifest.json','utf8'))
 it('validates real source provenance and rejects unsafe asset and source URLs',()=>{
  expect('validateManifest' in repo).toBe(true)
- expect(repo.validateManifest(manifest).datasets).toHaveLength(5)
+ expect(repo.validateManifest(manifest).datasets).toHaveLength(6)
  for(const path of ['../secret','/outside','https://evil.invalid/file','sectors/../../secret','sectors\\evil','sectors/%2e%2e/a']){
   const m=structuredClone(manifest);m.datasets[0].assetPath=path
   expect(()=>repo.validateManifest(m)).toThrow('manifest')
