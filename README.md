@@ -41,8 +41,13 @@ Ne jamais actualiser implicitement lors du build. Les scripts/data/ingest.py uti
 
 Les tests Python de source nécessitent les réponses sources sauvegardées ; les tests npm et le validateur fonctionnent uniquement avec les snapshots publics distribués. Sources figées au 11 octobre 2026 : les fixtures Python ne sont pas une actualisation à la date d’exécution. Si une validation échoue, ne pas remplacer le manifeste précédent ni réparer silencieusement les limites. Chunks immuables écrits avant remplacement atomique du manifeste. Les sources ne déclarent pas ici de complétude nationale/individuelle.
 
-## GitHub Pages (publication non effectuée)
+## GitHub Pages
 
-Workflow manuel uniquement (.github/workflows/pages.yml), pas de trigger push. PM doit revoir puis coordonner le dépôt PUBLIC explicitement autorisé pour ce projet. Dépôt attendu carte-scolaire ; si le slug change, adapter APP_BASE_PATH et retester. Upload : dist/client seulement, jamais dist/server. Actions vérifiées dans leurs sources officielles le 11 octobre 2026 : checkout/setup-node v6, configure-pages v5, upload-pages-artifact/deploy-pages v4. L’exécution GitHub distante n’est pas revendiquée.
+Site public : https://jtela.github.io/carte-scolaire/
+Dépôt public : https://github.com/jtela/carte-scolaire
 
-Avant publication, utiliser une liste positive des fichiers app : src/, public/, scripts/, tests/, configs, package.json/package-lock.json, README et rapports publics pertinents. .gitignore exclut credentials/.env, architecture/, research/, artifacts/, caches, navigateurs et notes internes PM/worker. Aucune publication, push, création distante ou dépense réalisée. Les artefacts de vérification restent locaux dans artifacts/ et docs/IMPLEMENTATION_REPORT.md.
+Publication autorisée et vérifiée le 11 octobre 2026 : déploiement GitHub Actions réussi, recherche par commune/code postal et vrais polygones vérifiés sur le site HTTPS. Les limites de couverture ci-dessus restent applicables.
+
+Workflow manuel uniquement (.github/workflows/pages.yml), pas de trigger push. Pour republier une version revue, lancer ce workflow depuis GitHub Actions. Dépôt carte-scolaire ; si le slug change, adapter APP_BASE_PATH et retester. Upload : dist/client seulement, jamais dist/server. Actions vérifiées dans leurs sources officielles le 11 octobre 2026 : checkout/setup-node v6, configure-pages v5, upload-pages-artifact/deploy-pages v4.
+
+Pour les mises à jour, conserver une liste positive des fichiers app : src/, public/, scripts/, tests/, configs, package.json/package-lock.json, README et rapports publics pertinents. .gitignore exclut credentials/.env, architecture/, research/, artifacts/, caches, navigateurs et notes internes PM/worker. Aucune dépense ni service payant ajouté. Les artefacts de vérification restent locaux dans artifacts/. docs/IMPLEMENTATION_REPORT.md décrit la validation préalable à la publication ; ses mentions de publication en attente sont historiques.
