@@ -7,7 +7,7 @@ test('real leading-zero postcode 01000 requires explicit commune choice',async({
  await expect(page.getByLabel('Commune trouvée')).toBeVisible({timeout:20000})
  await expect(page.getByLabel('Commune trouvée').locator('option')).toHaveCount(3)
  await page.getByLabel('Commune trouvée').selectOption('01344');await page.getByRole('button',{name:'Choisir',exact:true}).click()
- await expect(page.getByRole('status')).toContainText('non disponibles');await expect(page.locator('h2')).toContainText('Saint-Denis-lès-Bourg')
+ await expect(page.getByRole('status')).toContainText('non disponibles');await expect(page.getByRole('heading',{name:'Saint-Denis-lès-Bourg (01344)'})).toContainText('Saint-Denis-lès-Bourg')
 })
 test('fixture offline lookup has explicit retry and finite timeout is visible',async({page})=>{
  let mode='offline'

@@ -1,6 +1,11 @@
 import {useEffect,useRef,useState} from 'react'
 import type * as Leaflet from 'leaflet'
 import type {SectorFeature} from '../sectors/types'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 const TILE_URL='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
 const normal={color:'#165e86',weight:2,fillColor:'#2e86b5',fillOpacity:0.18}
 const active={color:'#101d28',weight:4,fillColor:'#d78722',fillOpacity:0.38}
@@ -47,11 +52,13 @@ export function SectorMap({features,bounds,commune}:{features:SectorFeature[];bo
  },[selected,mapRevision])
  const feature=features.find(f=>f.properties.id===selected)
  return <section aria-label={`Secteurs de ${commune}`}>
-  <div className="sector-choice"><label htmlFor="sector">Secteur</label><select id="sector" value={selected} onChange={event=>setSelected(event.target.value)}><option value="">Choisissez un secteur</option>{features.map(f=><option key={f.properties.id} value={f.properties.id}>{f.properties.colleges.map(c=>c.name).join(' / ')}</option>)}</select></div>
-  {feature && <p className="details">{feature.properties.colleges.map(c=>c.name+(c.uai?` — UAI ${c.uai}`:'')).join(' / ')}. {feature.properties.schoolYear||'Millésime non précisé'}.</p>}
-  <p id="map-help" className="map-help">Carte : flèches pour déplacer la vue, + et − pour zoomer, Échap pour fermer la fenêtre. Le choix de secteur est accessible au clavier.</p>
-  {tileWarning && <p role="note">Fond de carte indisponible. Les secteurs restent affichés.</p>}
-  {mapError && <p role="alert">Impossible d’afficher la carte. Les collèges restent accessibles dans la liste. <button onClick={()=>setAttempt(n=>n+1)}>Réessayer la carte</button></p>}
-  <div className="map" ref={container} role="region" aria-label={`Carte des secteurs de ${commune}`} aria-describedby="map-help" tabIndex={0} onKeyDown={event=>{if(event.key==='Escape')map.current?.closePopup()}}/>
+  <Card className="map-card"><CardHeader><CardTitle><h2>Carte des secteurs</h2></CardTitle></CardHeader><CardContent>
+   <div className="sector-choice"><Label htmlFor="sector">Secteur</Label><NativeSelect id="sector" value={selected} onChange={event=>setSelected(event.target.value)}><NativeSelectOption value="">Choisissez un secteur</NativeSelectOption>{features.map(f=><NativeSelectOption key={f.properties.id} value={f.properties.id}>{f.properties.colleges.map(c=>c.name).join(' / ')}</NativeSelectOption>)}</NativeSelect></div>
+   <p id="map-help" className="map-help">Carte : flèches pour déplacer la vue, + et − pour zoomer, Échap pour fermer la fenêtre. Le choix de secteur est accessible au clavier.</p>
+   {tileWarning && <Alert role="note" className="map-notice"><AlertDescription>Fond de carte indisponible. Les secteurs restent affichés.</AlertDescription></Alert>}
+   {mapError && <Alert role="alert" variant="destructive" className="map-notice"><AlertDescription>Impossible d’afficher la carte. Les collèges restent accessibles dans la liste.</AlertDescription><Button variant="outline" type="button" className="mt-3" onClick={()=>setAttempt(n=>n+1)}>Réessayer la carte</Button></Alert>}
+   <div className="map" ref={container} role="region" aria-label={`Carte des secteurs de ${commune}`} aria-describedby="map-help" tabIndex={0} onKeyDown={event=>{if(event.key==='Escape')map.current?.closePopup()}}/>
+  </CardContent></Card>
+  {feature && <Card className="detail-card"><CardHeader><CardTitle><h3>Détails du secteur sélectionné</h3></CardTitle></CardHeader><CardContent><p className="details">{feature.properties.colleges.map(c=>c.name+(c.uai?` — UAI ${c.uai}`:'')).join(' / ')}. {feature.properties.schoolYear||'Millésime non précisé'}.</p></CardContent></Card>}
  </section>
 }
